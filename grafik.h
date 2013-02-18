@@ -41,6 +41,8 @@ private slots:
 
     void on_pushButton_8_clicked();
 
+    void on_pushButton_10_clicked();
+
 signals:
     void plotHiSignal();
     void plotQ1Signal();
@@ -54,6 +56,7 @@ signals:
 
     void SaveCsvSignal();
     void SaveWavesSignal();
+    void SaveULPSignal();
 
 private:
 

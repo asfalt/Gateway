@@ -11,6 +11,7 @@ Grafik::Grafik(QWidget *parent) :
     ui->graphicsView->setScene(Scene1);
 
     ui->pushButton_4->setFocus();
+    ui->pushButton_10->setVisible(false);
 }
 
 Grafik::~Grafik()
@@ -72,4 +73,9 @@ void Grafik::on_pushButton_9_clicked()
 void Grafik::on_pushButton_8_clicked()
 {
     emit SaveCsvSignal();
+}
+
+void Grafik::on_pushButton_10_clicked()
+{
+    emit SaveULPSignal();
 }

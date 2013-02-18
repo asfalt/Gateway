@@ -17,7 +17,7 @@
    <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="1" rowspan="11">
+   <item row="0" column="1" rowspan="12">
     <widget class="QGraphicsView" name="graphicsView"/>
    </item>
    <item row="2" column="0">
@@ -90,6 +90,16 @@
     </widget>
    </item>
    <item row="10" column="0">
+    <widget class="QPushButton" name="pushButton_9">
+     <property name="toolTip">
+      <string>Сохранить результаты расчёта в формате для чтения программой Waves (*.wdt)</string>
+     </property>
+     <property name="text">
+      <string>Импорт в Waves</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
     <widget class="QPushButton" name="pushButton_8">
      <property name="toolTip">
       <string>Сохранить в формате данных, разделённых точкой с запятой для обработки в Excel</string>
@@ -99,13 +109,13 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="0">
-    <widget class="QPushButton" name="pushButton_9">
-     <property name="toolTip">
-      <string>Сохранить результаты расчёта в формате для чтения программой Waves (*.wdt)</string>
+   <item row="11" column="0">
+    <widget class="QPushButton" name="pushButton_10">
+     <property name="enabled">
+      <bool>true</bool>
      </property>
      <property name="text">
-      <string>Импорт для Waves</string>
+      <string>Импорт в ULP</string>
      </property>
     </widget>
    </item>

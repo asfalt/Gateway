@@ -13,6 +13,8 @@
 #include "grafik.h"
 #include <QGraphicsTextItem>
 
+#include <QDataStream> //для импорта в UNDALIMINAPORTAE
+
 namespace Ui {
 class MainWindow;
 }
@@ -116,6 +118,9 @@ private slots:
     void PlotMu2();
     void PlotSigma();
     void trigEventPlot();
+    void SaveToCsv();
+    void SaveToWaves();
+    void SaveToULP();
 
 
 private:

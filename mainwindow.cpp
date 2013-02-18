@@ -61,12 +61,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(Gra, SIGNAL(plotSigmaSignal()), this, SLOT(PlotSigma()) );
 
     connect(Gra, SIGNAL(EventPlotSignal()), this, SLOT(trigEventPlot()) );
+    connect(Gra, SIGNAL(SaveCsvSignal()), this, SLOT(SaveToCsv()) );
+    connect(Gra, SIGNAL(SaveWavesSignal()), this, SLOT(SaveToWaves()) );
 
 
 
 
     //откроем файл параметров по умолчанию
     openPar(true);
+
+
+    ui->pushButton_4->setVisible(false);
 
     //длина камеры
     //ширина камеры
@@ -199,7 +204,7 @@ void MainWindow::on_pushButton_clicked()//кнопка расчёт
        {
            h1 = hp + p1 + p2 + hovi/2;
            omega1 = Bk * hovi;
-           qDebug() << "нижнее не подтоплено   h1: " << h1;
+ //          qDebug() << "нижнее не подтоплено   h1: " << h1;
        }
        else  //нижнее отв подтоплено
        {
@@ -209,7 +214,7 @@ void MainWindow::on_pushButton_clicked()//кнопка расчёт
            {
            timeNijPodt = (float) ntime;
            }
-           qDebug() << "нижнее подтоплено   h1: " << h1;
+ //          qDebug() << "нижнее подтоплено   h1: " << h1;
        }
 
        muu1 = mu1();
@@ -220,7 +225,7 @@ void MainWindow::on_pushButton_clicked()//кнопка расчёт
        if(hovi <= av)
        {
            QQ2 = 0;
-           qDebug() << "верхнее нет расхода";
+ //          qDebug() << "верхнее нет расхода";
        }
        else
        {
@@ -239,7 +244,7 @@ void MainWindow::on_pushButton_clicked()//кнопка расчёт
                muu2 = mu2();
                QQ2 = muu2*omega2*qSqrt(2*g*h2);
 
-               qDebug() << "верхнее не подтоплено  h2: " << h2;
+  //             qDebug() << "верхнее не подтоплено  h2: " << h2;
            }
            else //верх отв подтоплено
            {
@@ -253,7 +258,7 @@ void MainWindow::on_pushButton_clicked()//кнопка расчёт
                {
                timeVerhPodt = (float) ntime;
                }
-               qDebug() << "верхнее подтоплено  h2: " << h2;
+  //             qDebug() << "верхнее подтоплено  h2: " << h2;
            }
 
 
@@ -278,11 +283,11 @@ void MainWindow::on_pushButton_clicked()//кнопка расчёт
     mu2_max = qMax(mu2_max, muu2);
     sigma_max = qMax(sigma_max, siigma);
 
-    qDebug() << ntime << "   время: " <<ntime*deltat << "    hi= " << htime   << "  Q1: " << QQ1  << " mu1:" << muu1 << "  omega1: " << omega1 << "   ||"         << "  Q2: " << QQ2 << " mu2:" << muu2 << "  omega2: " << omega2  << "  hovi: " << hovi << "  av: " << av;
+/*    qDebug() << ntime << "   время: " <<ntime*deltat << "    hi= " << htime   << "  Q1: " << QQ1  << " mu1:" << muu1 << "  omega1: " << omega1 << "   ||"         << "  Q2: " << QQ2 << " mu2:" << muu2 << "  omega2: " << omega2  << "  hovi: " << hovi << "  av: " << av;
     qDebug() << "   sigma: " << siigma;
     qDebug() << "    ____________";
     qDebug() << "   ";
-
+*/
     }
 
     //показываем форму графика
@@ -532,23 +537,37 @@ bool MainWindow::testValuesMain()
 
     //максимальная величина опускания ворот
     sa = ui->Edithovmax->text();
-    sa.toFloat(&ok);
+    float hovmaxPr = sa.toFloat(&ok);
     if(!ok)
     {
         QMessageBox::about(this, "Некорректное значение", "Введите числовое значение, \nиспользуя в качестве десятичного разделителя точку");
         ui->Edithovmax->setFocus();
         return ok;
     }
+    else if(hovmaxPr > 3.5)
+    {
+        QMessageBox::about(this, "Некорректное значение", "Максимальная величина опускания ворот должна находиться \nв интервале значений от 0.0 до 3.5, включительно.");
+        ui->EditLkons->setFocus();
+        return false;
+    }
 
 
     // длина консоли ворот
     sa = ui->EditLkons->text();
-    sa.toFloat(&ok);
+    float lkonsPr = sa.toFloat(&ok);
     if(!ok)
     {
         QMessageBox::about(this, "Некорректное значение", "Введите числовое значение, \nиспользуя в качестве десятичного разделителя точку");
         ui->EditLkons->setFocus();
         return ok;
+    }
+    else if( !( (lkonsPr > 0.6999) && lkonsPr <= 2.5) )
+    {
+        QMessageBox::about(this, "Некорректное значение", "Величина длины консоли должна находиться \nв интервале значений от 0.7 до 2.5, включительно.");
+        ui->EditLkons->setFocus();
+ //       qDebug() << "111111 " << lkonsPr;
+        return false;
+
     }
 
 
@@ -593,13 +612,20 @@ bool MainWindow::testValuesMain()
     if( ui->checkBox_3->isChecked())
     {
 
-       sa.toFloat(&ok);
+       float alfaPr = sa.toFloat(&ok);
        if(!ok)
        {
            QMessageBox::about(this, "Некорректное значение", "Введите числовое значение, \nиспользуя в качестве десятичного разделителя точку");
            ui->Editalfa->setFocus();
            return ok;
        }
+       else if(alfaPr < 30 || alfaPr > 70 )
+       {
+           QMessageBox::about(this, "Некорректное значение", "Величина alfa должна находиться \nв интервале значений от 30 до 70, включительно.");
+           ui->Editalfa->setFocus();
+           return false;
+       }
+
     }
 
 
@@ -1073,19 +1099,30 @@ float MainWindow::mu1()
     mu07=0; mu15=0; mu25=0; mu1returned = 0;
 
 
-    if(Lkons >= 0.7 && Lkons < 1.5)
+    if(Lkons > 0.7 && Lkons < 1.5)
     {
         mu07 = mu_07();
         mu15 = mu_15();
         mu1returned = ((mu15-mu07)/(1.5 - 0.7)) * (Lkons-0.7) + mu07;
+ //       qDebug() << "oooooooooooop 1 ";
+
     }
+
     else if(Lkons >= 1.5 && Lkons <= 2.5)
     {
         mu15 = mu_15();
         mu25 = mu_25();
         mu1returned = ((mu25-mu15)/(2.5-1.5)) * (Lkons-1.5) + mu15;
+//        qDebug() << "oooooooooooop 3 ";
+    }
+    else //(Lkons == 0.7)
+    {
+        mu07 = mu_07();
+        mu1returned = mu07;
+ //       qDebug() << "oooooooooooop 07 " << mu07;
     }
 
+ //   qDebug() << "oooooooooooop ______ " << mu1returned << "   mu07" << mu07;
     return mu1returned;
 }
 
@@ -1128,9 +1165,11 @@ float MainWindow::sigma()
 
 void MainWindow::on_pushButton_4_clicked()
 {
-    Gra->showNormal();
+   /* Gra->showNormal();
     Gra->setWindowTitle("График");
     PlotQ2();
+    */
+    testValuesMain();
 }
 
 void MainWindow::PlotHi()
@@ -1726,7 +1765,7 @@ void MainWindow::PlotMu1()
      {
          hh = mu1timeVec[i] *Mavert;
 //         Gra->Scene1->addEllipse(tim-2,-hh-2,4,4);
-         if(i!=0)
+         if(i > 1)
          {
          Gra->Scene1->addLine(timPrew, -hhPrew, tim, -hh);
          }
@@ -1982,6 +2021,76 @@ void MainWindow::trigEventPlot()
 {
     showEventsFlag = !showEventsFlag;
 }
+
+
+void MainWindow::SaveToCsv()  //Сохраняет результаты расчёта в csv
+{
+    QString FileName = QFileDialog::getSaveFileName(this,
+                                                        "Сохранить текстовый файл с результатами расчёта", "res.csv",
+                                                        "данные, разделённые точкой с запятой (*.csv);;Все файлы (*)");
+    if (FileName.isEmpty())
+        {
+            return;
+        }
+
+    QFile filewr(FileName);
+    filewr.open(QIODevice::WriteOnly);
+    QTextStream out(&filewr);
+
+    out << "time" << ";" << "Q" << ";" <<  "Q1" << ";" << "Q2" << ";" << "mu1" << ";" << "mu2" << ";" << "sigma" << "\n";
+
+    for(int i = 0; i<=ntime; i++)
+    {
+
+        out << i*deltat << ";" << Q1timeVec[i] + Q2timeVec[i] << ";" << Q1timeVec[i] << ";" << Q2timeVec[i] << ";" << mu1timeVec[i] << ";" << mu2timeVec[i] << ";" << sigmaVec[i] << "\n";
+    }
+}
+
+
+void MainWindow::SaveToWaves() //Сохраняет результаты для программы Waves
+{
+    //сначала проверим введённые значения
+    if (!testValuesSecond())
+    {
+        return;
+    }
+
+    QString FileName = QFileDialog::getSaveFileName(this,
+                                                        "Сохранить файл с результатами расчёта для программы Waves", "res.wdt",
+                                                        "файлы программы Waves (*.wdt);;Все файлы (*)");
+
+
+    if (FileName.isEmpty())
+        {
+            return;
+        }
+
+    QFile filewr(FileName);
+    filewr.open(QIODevice::WriteOnly);
+    QTextStream out(&filewr);
+
+    out << Lk << "\n";        //Длина камеры шлюза
+    out << Bk << "\n";        //Ширина камеры шлюза
+    out << ui->Edithokam->text() << "\n";
+    out << ui->EditLsud->text() << "\n";
+    out << ui->EditBsud->text() << "\n";
+    out << ui->EditHsud->text() << "\n";
+    out << ui->EditLpolsud->text() << "\n";
+
+    for(int i = 0; i<=ntime; i++)
+    {
+        out << i*deltat << "\n";
+        out << Q1timeVec[i] + Q2timeVec[i] << "\n";
+    }
+
+}
+
+void MainWindow::SaveToULP()
+{
+    ;
+}
+
+
 
 
 void MainWindow::closeEvent(QCloseEvent *)
