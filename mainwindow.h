@@ -14,6 +14,7 @@
 #include <QGraphicsTextItem>
 
 #include <QDataStream> //для импорта в UNDALIMINAPORTAE
+#include <QLocale>     //для смены десятичного разделителя на запятую
 
 namespace Ui {
 class MainWindow;
@@ -58,6 +59,7 @@ public:
     float tvor;  //толщина ворот по верху
     float deltat;  // шаг по времени
     float alfa;
+    float mu1Const;  //постоянное значение коэфф расхода ниж отв
 
     int typeog;  //тип оголовка 1 - цилиндрический 2-прямоугольный
     int typekoz;  //тип стр козырька 1 - полигональный 2-криволинейный
@@ -122,6 +124,9 @@ private slots:
     void SaveToWaves();
     void SaveToULP();
 
+    void PlotAfterEval();
+
+    void on_checkBoxMu1Const_clicked();
 
 private:
     Ui::MainWindow *ui;

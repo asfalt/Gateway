@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     typekoz = 0;  //тип стр козырька 1 - полигональный 2-криволинейный
     alfa = 0;
     ui->Editalfa->setText("0");
+    mu1Const = 0.6;
 
     hokam = 0;  //начальная глубина в камере
     Lsud = 0;  //длина судна
@@ -72,6 +73,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     ui->pushButton_4->setVisible(false);
+    ui->EditMu1Const->setVisible(false);
+    ui->label_22->setVisible(false);
 
     //длина камеры
     //ширина камеры
@@ -217,7 +220,17 @@ void MainWindow::on_pushButton_clicked()//кнопка расчёт
  //          qDebug() << "нижнее подтоплено   h1: " << h1;
        }
 
-       muu1 = mu1();
+       //Для вычисления с постоянным коэффициентом расхода нижнего отверстия
+       if(ui->checkBoxMu1Const->isChecked())
+       {
+          muu1 = mu1Const;
+  //        qDebug() << "коэфф ниж отв постоянный: " << mu1Const;
+       }
+       else
+       {
+          muu1 = mu1();
+       }
+
        QQ1 = muu1*omega1*qSqrt(2*g*h1);
 
 
@@ -291,9 +304,16 @@ void MainWindow::on_pushButton_clicked()//кнопка расчёт
     }
 
     //показываем форму графика
-    Gra->showNormal();
+    if(!Gra->isVisible())
+    {
+    Gra->show();
     Gra->setWindowTitle("График");
-    PlotQ();
+    }
+//    PlotQ();
+    PlotAfterEval();
+//    Gra->FocusButtons();
+    Gra->activateWindow();
+
 
 }
 
@@ -396,6 +416,10 @@ void MainWindow::on_pushButton_3_clicked() //сохранить файл пар�
     out << ui->Editalfa->text();
     out << "\n";
 
+    //постоянный коэфф расхода нижнего отв.
+
+    out << ui->EditMu1Const->text();
+    out << "\n";
 
 
     //необязательные параметры проверим
@@ -628,6 +652,19 @@ bool MainWindow::testValuesMain()
 
     }
 
+    //Постоянное значение коэффициента расхода ниж отв.
+    if (ui->checkBoxMu1Const->isChecked())
+    {
+       sa = ui->EditMu1Const->text();
+       sa.toFloat(&ok);
+       if(!ok)
+       {
+           QMessageBox::about(this, "Некорректное значение", "Введите числовое значение, \nиспользуя в качестве десятичного разделителя точку");
+           ui->EditMu1Const->setFocus();
+           return ok;
+       }
+    }
+
 
     return true;
 }
@@ -765,6 +802,9 @@ void MainWindow::setValues()
     {
         typekoz = 2;
     }
+
+    sa = ui->EditMu1Const->text();
+    mu1Const = sa.toFloat();
 }
 
 void MainWindow::on_pushButton_2_clicked() //открыть файл с данными
@@ -885,6 +925,9 @@ void MainWindow::openPar(bool isParDefault) //функция открыть фа
        //альфа
        in >> sa;
        ui->Editalfa->setText(sa);
+
+       in >> sa;
+       ui->EditMu1Const->setText(sa);
 
 
 
@@ -1241,6 +1284,11 @@ void MainWindow::PlotHi()
      {
          Gra->Scene1->addLine(0, -i, -4, -i);
 
+         QPen Pen1;
+         Pen1.setColor(Qt::gray);
+         Pen1.setStyle(Qt::DashLine);
+         Gra->Scene1->addLine(0, -i, tim_max, -i, Pen1);
+
          QString ss;
          ss.setNum(co);
          QGraphicsTextItem *texcoo = Gra->Scene1->addText(ss);
@@ -1292,7 +1340,7 @@ void MainWindow::PlotHi()
 
      qDebug() << "zat " << timeOstanZatv*deltat << "   npodt " << timeNijPodt*deltat << "    verPodt " << timeVerhPodt*deltat << "   Verrash " << TimeVerhRash*deltat;
 
-
+     Gra->FocusButtons();
 
 }
 
@@ -1364,6 +1412,11 @@ void MainWindow::PlotQ1()
      {
          Gra->Scene1->addLine(0, -i, -4, -i);
 
+         QPen Pen1;
+         Pen1.setColor(Qt::gray);
+         Pen1.setStyle(Qt::DashLine);
+         Gra->Scene1->addLine(0, -i, tim_max, -i, Pen1);
+
          QString ss;
          ss.setNum(co);
          QGraphicsTextItem *texcoo = Gra->Scene1->addText(ss);
@@ -1411,6 +1464,8 @@ void MainWindow::PlotQ1()
          tim = tim + 1*Mahor;
          hhPrew = hh;
      }
+
+     Gra->FocusButtons();
 
 }
 
@@ -1482,6 +1537,11 @@ void MainWindow::PlotQ2()
      {
          Gra->Scene1->addLine(0, -i, -4, -i);
 
+         QPen Pen1;
+         Pen1.setColor(Qt::gray);
+         Pen1.setStyle(Qt::DashLine);
+         Gra->Scene1->addLine(0, -i, tim_max, -i, Pen1);
+
          QString ss;
          ss.setNum(co);
          QGraphicsTextItem *texcoo = Gra->Scene1->addText(ss);
@@ -1530,6 +1590,7 @@ void MainWindow::PlotQ2()
          hhPrew = hh;
      }
 
+     Gra->FocusButtons();
 }
 
 
@@ -1604,6 +1665,11 @@ void MainWindow::PlotQ()
      {
          Gra->Scene1->addLine(0, -i, -4, -i);
 
+         QPen Pen1;
+         Pen1.setColor(Qt::gray);
+         Pen1.setStyle(Qt::DashLine);
+         Gra->Scene1->addLine(0, -i, tim_max, -i, Pen1);
+
          QString ss;
          ss.setNum(co);
          QGraphicsTextItem *texcoo = Gra->Scene1->addText(ss);
@@ -1652,6 +1718,7 @@ void MainWindow::PlotQ()
          hhPrew = hh;
      }
 
+     Gra->FocusButtons();
 
 }
 
@@ -1726,6 +1793,11 @@ void MainWindow::PlotMu1()
      {
          Gra->Scene1->addLine(0, -i, -4, -i);
 
+         QPen Pen1;
+         Pen1.setColor(Qt::gray);
+         Pen1.setStyle(Qt::DashLine);
+         Gra->Scene1->addLine(0, -i, tim_max, -i, Pen1);
+
          QString ss;
          ss.setNum(co);
          QGraphicsTextItem *texcoo = Gra->Scene1->addText(ss);
@@ -1775,6 +1847,7 @@ void MainWindow::PlotMu1()
          hhPrew = hh;
      }
 
+     Gra->FocusButtons();
 
 }
 
@@ -1845,6 +1918,11 @@ void MainWindow::PlotMu2()
      {
          Gra->Scene1->addLine(0, -i, -4, -i);
 
+         QPen Pen1;
+         Pen1.setColor(Qt::gray);
+         Pen1.setStyle(Qt::DashLine);
+         Gra->Scene1->addLine(0, -i, tim_max, -i, Pen1);
+
          QString ss;
          ss.setNum(co);
          QGraphicsTextItem *texcoo = Gra->Scene1->addText(ss);
@@ -1894,6 +1972,7 @@ void MainWindow::PlotMu2()
      }
 
 
+     Gra->FocusButtons();
 }
 
 void MainWindow::PlotSigma()
@@ -1963,6 +2042,11 @@ void MainWindow::PlotSigma()
      {
          Gra->Scene1->addLine(0, -i, -4, -i);
 
+         QPen Pen1;
+         Pen1.setColor(Qt::gray);
+         Pen1.setStyle(Qt::DashLine);
+         Gra->Scene1->addLine(0, -i, tim_max, -i, Pen1);
+
          QString ss;
          ss.setNum(co);
          QGraphicsTextItem *texcoo = Gra->Scene1->addText(ss);
@@ -2013,6 +2097,7 @@ void MainWindow::PlotSigma()
 
      qDebug() << "sigm_max: " << sigma_max;
 
+     Gra->FocusButtons();
 
 }
 
@@ -2020,11 +2105,16 @@ void MainWindow::PlotSigma()
 void MainWindow::trigEventPlot()
 {
     showEventsFlag = !showEventsFlag;
+    PlotAfterEval();
 }
 
 
 void MainWindow::SaveToCsv()  //Сохраняет результаты расчёта в csv
 {
+    //Для смены десятичного разделителя на запятую
+    QLocale Loc;
+   // Loc.decimalPoint();
+
     QString FileName = QFileDialog::getSaveFileName(this,
                                                         "Сохранить текстовый файл с результатами расчёта", "res.csv",
                                                         "данные, разделённые точкой с запятой (*.csv);;Все файлы (*)");
@@ -2037,6 +2127,8 @@ void MainWindow::SaveToCsv()  //Сохраняет результаты расч
     filewr.open(QIODevice::WriteOnly);
     QTextStream out(&filewr);
 
+    out.setLocale(Loc);
+
     out << "time" << ";" << "Q" << ";" <<  "Q1" << ";" << "Q2" << ";" << "mu1" << ";" << "mu2" << ";" << "sigma" << "\n";
 
     for(int i = 0; i<=ntime; i++)
@@ -2044,6 +2136,8 @@ void MainWindow::SaveToCsv()  //Сохраняет результаты расч
 
         out << i*deltat << ";" << Q1timeVec[i] + Q2timeVec[i] << ";" << Q1timeVec[i] << ";" << Q2timeVec[i] << ";" << mu1timeVec[i] << ";" << mu2timeVec[i] << ";" << sigmaVec[i] << "\n";
     }
+
+   // qDebug() << " ___: " << Loc.decimalPoint();
 }
 
 
@@ -2096,4 +2190,43 @@ void MainWindow::SaveToULP()
 void MainWindow::closeEvent(QCloseEvent *)
 {
     Gra->close();
+}
+
+
+void MainWindow::on_checkBoxMu1Const_clicked()
+{
+    ui->EditMu1Const->setVisible(!ui->EditMu1Const->isVisible());
+    ui->label_22->setVisible(!ui->label_22->isVisible());
+}
+
+void MainWindow::PlotAfterEval()
+{
+    if(Gra->numGraph == 1)
+    {
+        PlotHi();
+    }
+    else if(Gra->numGraph == 2)
+    {
+        PlotQ1();
+    }
+    else if(Gra->numGraph == 3)
+    {
+        PlotQ2();
+    }
+    else if(Gra->numGraph == 4)
+    {
+        PlotQ();
+    }
+    else if(Gra->numGraph == 5)
+    {
+        PlotMu1();
+    }
+    else if(Gra->numGraph == 6)
+    {
+        PlotMu2();
+    }
+    else
+    {
+        PlotSigma();
+    }
 }

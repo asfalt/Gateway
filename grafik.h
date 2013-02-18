@@ -19,6 +19,10 @@ public:
     Ui::Grafik *ui;
 
     QGraphicsScene *Scene1;
+    int numGraph;
+
+
+    void FocusButtons();
     
 private slots:
     void on_pushButton_clicked();

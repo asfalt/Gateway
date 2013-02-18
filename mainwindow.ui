@@ -328,7 +328,7 @@
       <rect>
        <x>88</x>
        <y>195</y>
-       <width>221</width>
+       <width>241</width>
        <height>17</height>
       </rect>
      </property>
@@ -339,7 +339,7 @@
       <string>в качестве десятичного разделителя используйте точку</string>
      </property>
      <property name="text">
-      <string>Скорость опускания ворот, м</string>
+      <string>Скорость опускания ворот, м/сек</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="Editp1">
@@ -905,14 +905,50 @@
    <widget class="QPushButton" name="pushButton_4">
     <property name="geometry">
      <rect>
-      <x>200</x>
-      <y>400</y>
+      <x>690</x>
+      <y>450</y>
       <width>98</width>
       <height>27</height>
      </rect>
     </property>
     <property name="text">
      <string>PushButton</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBoxMu1Const">
+    <property name="geometry">
+     <rect>
+      <x>178</x>
+      <y>406</y>
+      <width>491</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Расчёт с постоянным значением коэффициента расхода ниж. отв.</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="EditMu1Const">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>430</y>
+      <width>113</width>
+      <height>27</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_22">
+    <property name="geometry">
+     <rect>
+      <x>301</x>
+      <y>435</y>
+      <width>261</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Коэфф. расхода нижнего отверстия</string>
     </property>
    </widget>
   </widget>
